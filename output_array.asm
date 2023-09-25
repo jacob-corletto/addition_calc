@@ -4,7 +4,11 @@ global show_array
 
 segment .data 
 
-dataline db "%lf",10,0
+float_form db "%lf",10,0
+
+segment .bss
+align 64
+backup resb 832
 
 segment .text
 show_array:
@@ -26,33 +30,43 @@ push       r14
 push       r15                                              
 pushf  
 
-mov r14, rdi				;the array start point
-mov r15, rsi                ;the size of array
+mov rax, 7
+mov rdx, 0
+xsave [backup]
+
+mov r14, rdi	;the array start point
+mov r15, rsi    ;the size of array
 
 ;print frist 
 
 ;looping part
-mov r13,0 					;the counter
+mov r13,0 		;the counter
 
 begin: 
 cmp r13,r15
 jge loop_finished
+
 mov rax,1
-mov rdi,dataline
-;mov rsi,[r14+8*r13]
+mov rdi,float_form
 mov rsi,r13
+
 mov r12,r13
-shl r12,3					;fast mult by 8
+shl r12,3		
 add r12,r13
 mov rdx,r12
+
 movsd xmm0, [r14+8*r13]
 mov rcx,[r14+8*r13]
 call printf
+
 inc r13
 jmp begin
 
 loop_finished:
-xor rax, rax
+
+mov rax, 7
+mov rdx, 0
+xrstor [backup]
 
 popf                                                        
 pop        r15                                              

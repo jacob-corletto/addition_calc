@@ -7,7 +7,11 @@ global sum_array
 
 segment .data 
 int_form db "%lf",10,0  
-float_form db "%lf"             
+float_form db "%lf"  
+
+segment .bss
+align 64
+backup resb 832           
 
 segment .text
 sum_array:
@@ -27,17 +31,20 @@ push       r12
 push       r13                                              
 push       r14                                              
 push       r15                                              
-pushf                   
+pushf 
 
-;push qword 0
-mov r14, rdi				;the array start point
-mov r15, rsi                ;the size of array
+;xsave & backup not included messed with the xmm0 register
+;mov rax,7
+;mov rdx,0
+;xsave [backup]                  
 
-;looping part
-mov r13,0 					;the counter
-;mov r11,1
+mov r14, rdi	;the array start point
+mov r15, rsi    ;the size of array
+
+mov r13,0 	;the counter
 movsd xmm0,xmm15
 
+;looping part
 begin: 
 cmp r13,r15
 jge loop_finished
@@ -47,30 +54,15 @@ addsd xmm15, xmm14
 inc r13
 jmp begin
 
-;=============================old way
-;mov rax,0
-;mov rdi,float_form
-;mov rsi,r13
-;mov r12,r13
-;shl r12,3					;fast mult by 8
-;add r12,r13
-;mov rdx,r12
-;movsd xmm0, [r14+8*r13]
-;mov rcx,[r14+8*r13]
-;call printf
-;addsd xmm0, [r14+8*r11]
-;movsd xmm15,xmm0
-;inc r13
-;jmp begin
-;=============================old way
-
 loop_finished:
 
-;push qword 0
 movsd [rsp], xmm15
-;Xrstor
+
+;mov rax, 7
+;mov rdx, 0
+;xrstor [backup]
+
 movsd xmm0, [rsp]
-;pop rax
 
 popf                                                        
 pop        r15                                              

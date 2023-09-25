@@ -33,7 +33,10 @@ array_address db "The address of the array plywood is %016lx",10,0
 
 segment .bss
 ;align 16
+align 64
+backup resb 832
 array resq number_of_cells
+returnarray resq 2
 
 segment .text
 manage:
@@ -54,7 +57,11 @@ push       r12
 push	   r13 
 push       r14
 push	   r15 
-pushf                   
+pushf        
+
+mov rax,7
+mov rdx,0
+xsave [backup]           
 
 mov rax, 0
 mov rdi, stringformat
@@ -98,12 +105,13 @@ mov rdi, stringformat
 mov rsi, exit_msg
 call printf
 
-push qword 0
 movsd [rsp], xmm15
-;Xrstor
-movsd xmm0, [rsp]
-pop rax
 
+mov rax, 7
+mov rdx, 0
+xrstor [backup]
+
+movsd xmm0, [rsp]
 
 popf                                                        
 pop        r15                                              

@@ -1,13 +1,17 @@
+/*jacob corletto
+  CWID: 888466117
+  Copyright 2023
+
+*/
+
+
 #include <stdio.h>
-//#include <string.h>
 using namespace std;
 
 extern "C" double manage();
-//extern "C" double input_array(double *,long);
 
 int main() {
-  //double return_code = 0.00;
-  double sum = 0.00;
+  double sum = 0.0;
   printf("Welcome to Array Management System \n");
   
   printf("This product is maintained by Your Name at jacob.corletto@csu.fullerton.edu \n");
