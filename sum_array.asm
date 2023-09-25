@@ -67,9 +67,9 @@ jmp begin
 loop_finished:
 
 ;push qword 0
-;movsd [rsp], xmm15
+movsd [rsp], xmm15
 ;Xrstor
-;movsd xmm0, [rsp]
+movsd xmm0, [rsp]
 ;pop rax
 
 popf                                                        
