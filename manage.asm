@@ -11,32 +11,22 @@ extern sum_array
 global manage
 
 segment .data                
-intro db "We will take care of all your array needs.",10,0
-
-enter_numbers db "Please input float numbers separated by ws.  After the last number press ws followed by control-d.",10,0
-
-;go to input_array
-
-display_numbers_message db "Thank you.  The numbers in the array are",10,0
-
-display_sum db "The sum of numbers in the array is %lf",10,0
-
-exit_msg db "Thank you for using Array Management System.",10,0
-
-;test db "this is a test %1.6lf",10,0
-
-stringformat db "%s",0
-
-eight_byte_format db "%lf", 0
-
-array_address db "The address of the array plywood is %016lx",10,0
+string_format db "%s",0
+float_format db "%lf",0
+welcome db "welcome",10,0
+voltage db "please input voltage ",0
+resistance db "please input resistance ",0
+seconds db "plese input seconds ",0
+current db "please input current ",0
+name db "please enter name: ",0
+name_out db "hi ",0
+outofhere db "answer is: ",0
 
 segment .bss
 ;align 16
 align 64
 backup resb 832
-array resq number_of_cells
-returnarray resq 2
+
 
 segment .text
 manage:
@@ -57,61 +47,88 @@ push       r12
 push	   r13 
 push       r14
 push	   r15 
-pushf        
+pushf                 
 
-mov rax,7
-mov rdx,0
-xsave [backup]           
-
-mov rax, 0
-mov rdi, stringformat
-mov rsi, intro
-call printf
-
-mov rax, 0
-mov rdi, stringformat
-mov rsi, enter_numbers
+mov rax,0
+mov rdi, string_format
+mov rsi, welcome
 call printf
 
 mov rax,0
-mov rdi, array
-mov rsi, number_of_cells
-call input_array
-mov r13, rax
-
-mov rax, 0
-mov rdi, stringformat
-mov rsi, display_numbers_message
+mov rdi, string_format
+mov rsi, voltage
 call printf
 
-;output time (time to output)
-mov rax, 0
-mov rdi, array
-mov rsi, r13
-call show_array
+mov rax,0
+mov rdi, float_format
+mov rsi, rsp
+call scanf
+mov r15, rsp
 
-;sum array time
 mov rax, 0
-mov rdi, array
-mov rsi, r13
-call sum_array
+mov rdi, string_format
+mov rsi, resistance
+call printf
 
+mov rax, 0
+mov rdi, float_format
+mov rsi, rsp
+call scanf
+mov r14, rsp
+
+mov rax, 0
+mov rdi, string_format
+mov rsi, seconds
+call printf
+
+mov rax, 0
+mov rdi, float_format
+mov rsi, rsp
+call scanf
+mov r13, rsp
+
+mov rax, 0
+mov rdi, string_format
+mov rsi, name
+call printf
+
+mov rax, 0
+mov rdi, float_format
+mov rsi, rsp
+call scanf
+mov r12, rsp
+
+;calculations
+movsd xmm15, [r15] ;voltage
+movsd xmm14, [r14] ;resistance
+movsd xmm13, [r13] ;seconds
+
+movsd xmm12, xmm15 ;copy of V
+divsd xmm15, xmm14 ;xmm15 has I
+mulsd xmm12, xmm15 ;xmm12 has P
+mulsd xmm12, xmm13 ;has w
+
+mov rax, 0
+mov rdi, string_format
+mov rsi, name_out
+call printf
+
+;mov rax, 0
+;mov rdi, string_format
+;mov rsi, [r12]
+;call printf
+
+mov rax,0
+mov rdi, string_format
+mov rsi, outofhere
+call printf
+
+movsd xmm0, xmm12
 mov rax,1
-mov rdi, display_sum
+mov rdi, float_format
+mov rsi, rsp
 call printf
 
-mov rax, 0
-mov rdi, stringformat
-mov rsi, exit_msg
-call printf
-
-movsd [rsp], xmm15
-
-mov rax, 7
-mov rdx, 0
-xrstor [backup]
-
-movsd xmm0, [rsp]
 
 popf                                                        
 pop        r15                                              
