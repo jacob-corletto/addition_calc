@@ -12,7 +12,7 @@ extern "C" double manage();
 
 int main() {
   double sum = 0.0;
-  printf("Welcome to Array Management System \n");
+  printf("Welcome to the high voltage software system by jacob corletto \n");
   
   printf("This product is maintained by Your Name at jacob.corletto@csu.fullerton.edu \n");
   
